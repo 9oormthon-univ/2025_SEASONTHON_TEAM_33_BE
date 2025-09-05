@@ -97,51 +97,77 @@ public class RecruitmentService {
      * @return 저장된 건수
      */
     public int fetchAndSaveFromApi() {
-        String url = apiUrl + "/list"
-                + "?serviceKey=" + apiKey
-                + "&pageNo=1"
-                + "&numOfRows=10"
-                + "&resultType=json";
+        int pageNo = 1;
+        int numOfRows = 30; // 가능하면 최대치
+        int totalSaved = 0;
+        int maxLimit = 30;
 
         try {
-            RecruitmentApiResponse response = restTemplate.getForObject(url, RecruitmentApiResponse.class);
+            while (totalSaved < maxLimit) {
+                String url = apiUrl + "/list"
+                        + "?serviceKey=" + apiKey
+                        + "&pageNo=" + pageNo
+                        + "&numOfRows=" + numOfRows
+                        + "&resultType=json";
 
-            if (response == null || response.getResult() == null) {
-                throw new RuntimeException("API 응답이 올바르지 않습니다.");
+                RecruitmentApiResponse response = restTemplate.getForObject(url, RecruitmentApiResponse.class);
+
+                if (response == null || response.getResult() == null || response.getResult().isEmpty()) {
+                    break; // 더 이상 데이터 없음
+                }
+
+                List<Recruitment> recruitments = response.getResult().stream()
+                        .map(this::toEntity)
+                        .toList();
+
+                // Upsert 로직 적용
+                totalSaved += saveOrUpdateRecruitments(recruitments);
+                pageNo++;
             }
 
-            List<RecruitmentApiResponse.Item> items = response.getResult();
-
-            // Item → Recruitment 변환
-            List<Recruitment> recruitments = items.stream()
-                    .map(item -> Recruitment.builder()
-                            .companyName(item.getCompanyName())     // 기관명
-                            .title(item.getTitle())                 // 공고명
-                            .employmentType(item.getEmploymentType())    // 채용분야
-                            .description(item.getDescription())     // 설명
-                            .requirements(item.getRequirements())   // 자격요건
-                            .location(item.getLocation())           // 근무지
-                            .experienceLevel(convertCareer(item.getCareer()))
-                            .deadline(item.getDeadline())           // 마감일
-                            .url(item.getUrl())                     // 원본 URL
-                            .category(item.getNcsCdNmLst())         // NCS 분류
-                            .skills(List.of())                      // 기본은 빈 리스트
-                            .build())
-                    .toList();
-
-            recruitmentRepository.saveAll(recruitments);
-
-            fetchLogService.saveLog("SUCCESS", "API",
-                    recruitments.size(), 0, 0,
-                    "정상 저장");
-
-            return recruitments.size();
+            fetchLogService.saveLog("SUCCESS", "API", totalSaved, 0, 0, "정상 저장");
+            return totalSaved;
         } catch (Exception e) {
-            fetchLogService.saveLog("FAILED", "API",
-                    0, 0, 0,
-                    e.getMessage());
+            fetchLogService.saveLog("FAILED", "API", 0, 0, 0, e.getMessage());
             throw e;
         }
+    }
+
+    /**
+     * API 응답 Item → Recruitment 엔티티 변환
+     */
+    private Recruitment toEntity(RecruitmentApiResponse.Item item) {
+        return Recruitment.builder()
+                .externalId(String.valueOf(item.getAnnouncementId())) // 공공데이터포털 고유 ID
+                .companyName(item.getCompanyName())     // 기관명
+                .title(item.getTitle())                 // 공고 제목
+                .employmentType(item.getEmploymentType()) // 채용 유형
+                .description(item.getDescription())     // 설명
+                .requirements(item.getRequirements())   // 지원 자격
+                .location(item.getLocation())           // 근무지
+                .experienceLevel(convertCareer(item.getCareer())) // 경력 구분
+                .deadline(item.getDeadline())           // 마감일
+                .url(item.getUrl())                     // 원본 URL
+                .category(item.getNcsCdNmLst())         // NCS 분류명
+                .skills(List.of())                      // 기본은 빈 리스트
+                .build();
+    }
+
+    /**
+     * Upsert (중복 방지 저장)
+     */
+    private int saveOrUpdateRecruitments(List<Recruitment> recruitments) {
+        int count = 0;
+        for (Recruitment r : recruitments) {
+            Optional<Recruitment> existing = recruitmentRepository.findByExternalId(r.getExternalId());
+            if (existing.isPresent()) {
+                existing.get().updateFrom(r); // update 메서드 구현 (Recruitment 엔티티에 있음)
+            } else {
+                recruitmentRepository.save(r);
+                count++;
+            }
+        }
+        return count;
     }
 
     // ===== 변환 메서드 =====

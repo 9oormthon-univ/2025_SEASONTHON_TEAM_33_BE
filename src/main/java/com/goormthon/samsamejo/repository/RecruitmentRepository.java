@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
 
@@ -38,4 +39,9 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             @Param("category") String category,
             Pageable pageable
     );
+
+    /**
+     * 외부 공고 식별자(externalId)로 조회
+     */
+    Optional<Recruitment> findByExternalId(String externalId);
 }
