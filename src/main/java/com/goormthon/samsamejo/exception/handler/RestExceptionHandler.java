@@ -20,67 +20,73 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    // ==================== 400 BAD REQUEST ====================
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseDto<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {HandlerMethodValidationException.class})
+    @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseDto<?> handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         log.error("HandlerMethodValidationException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseDto<?> handleConstraintViolationException(ConstraintViolationException e) {
         log.error("ConstraintViolationException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {UnexpectedTypeException.class})
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseDto<?> handleServletRequestParameterException(MissingServletRequestParameterException e) {
+        log.error("MissingServletRequestParameterException raised: {}", e.getMessage());
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseDto<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("MethodArgumentTypeMismatchException raised: {}", e.getMessage());
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseDto<?> handleArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException raised: {}", e.getMessage());
+        return ResponseDto.error(ErrorCode.BAD_REQUEST);
+    }
+
+    // ==================== 500 INTERNAL SERVER ERROR ====================
+
+    @ExceptionHandler(UnexpectedTypeException.class)
     public ResponseDto<?> handleUnexpectedTypeException(UnexpectedTypeException e) {
         log.error("UnexpectedTypeException raised: {}", e.getMessage());
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {MissingServletRequestParameterException.class})
-    public ResponseDto<?> handleServletRequestParameterException(MissingServletRequestParameterException e) {
-        log.error("MissingServletRequestParameterException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(value = {MethodArgumentTypeMismatchException.class})
-    public ResponseDto<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.error("MethodArgumentTypeMismatchException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(value = {NoHandlerFoundException.class})
+    @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseDto<?> handleNoHandlerFoundException(NoHandlerFoundException e) {
         log.error("NoHandlerFoundException raised: {}", e.getMessage());
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
-    public ResponseDto<?> handleNoPageFoundException(Exception e) {
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseDto<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException raised: {}", e.getMessage());
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public ResponseDto<?> handleArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("RestException raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(Exception.class)
     public ResponseDto<?> handleException(Exception e) {
-        log.error("Exception raised: {}", e.getMessage());
+        log.error("Exception raised: {}", e.getMessage(), e);
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {RestException.class})
+    // ==================== Custom RestException ====================
+
+    @ExceptionHandler(RestException.class)
     public ResponseDto<?> handleRestException(RestException e) {
         log.error("RestException raised: {}", e.getErrorCode().getMessage());
         return ResponseDto.error(e.getErrorCode());

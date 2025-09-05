@@ -8,9 +8,13 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    // Common Client Error
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, 4000, "잘못된 요청 파라미터입니다."),
+
     // Not Found Error
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 사용자입니다"),
-    NOT_FOUND_FILE_PATH(HttpStatus.NOT_FOUND, 4001, "존재하지 않는 파일 경로입니다"),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 4001, "존재하지 않는 사용자입니다"),
+    NOT_FOUND_FILE_PATH(HttpStatus.NOT_FOUND, 4002, "존재하지 않는 파일 경로입니다"),
+    NOT_FOUND_RECRUITMENT(HttpStatus.NOT_FOUND, 4002, "존재하지 않는 채용 공고입니다"),
 
     // Security Error
     ACCESS_DENIED_ERROR(HttpStatus.UNAUTHORIZED, 4030, "접근이 거부된 토큰입니다."),
@@ -23,9 +27,9 @@ public enum ErrorCode {
 
     // Server, File Up/DownLoad Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부에 에러가 발생했습니다."),
-    FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "파일 업로드에 실패했습니다."),
-    FILE_DOWNLOAD(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "파일 다운로드에 실패했습니다."),
-    FILE_PROCESSING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "파일 바이트 처리 중 예외가 발생했습니다.");
+    FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, 5001, "파일 업로드에 실패했습니다."),
+    FILE_DOWNLOAD(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "파일 다운로드에 실패했습니다."),
+    FILE_PROCESSING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, 5003, "파일 바이트 처리 중 예외가 발생했습니다.");
 
     private final HttpStatus status;
     private final int code;
