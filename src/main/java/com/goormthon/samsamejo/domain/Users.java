@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +35,8 @@ public class Users extends BaseEntity {
     private String refreshToken;
 
     private String password;
+
+    private String name;
 
     private String email;
 
@@ -67,6 +71,7 @@ public class Users extends BaseEntity {
     private Users(
             EProvider oauthProvider,
             String oauthId,
+            String name,
             String email,
             ERole role,
             boolean isRegistered,
@@ -82,6 +87,7 @@ public class Users extends BaseEntity {
     ) {
         this.oauthProvider = oauthProvider;
         this.oauthId = oauthId;
+        this.name = name;
         this.email = email;
         this.role = role;
         this.isRegistered = isRegistered;
@@ -94,5 +100,19 @@ public class Users extends BaseEntity {
         this.resumeSaveName = resumeSaveName;
         this.portfolioOriginName = portfolioOriginName;
         this.portfolioSaveNam = portfolioSaveNam;
+    }
+
+    public void updateUserInfo(String name, String email, String phoneNumber, Education education, String major, List<String> interestFields, List<String> skills) {
+        this.name = name;
+        this.email = email;
+        this.contact = phoneNumber;
+        this.education = education;
+        this.major = major;
+        this.interests = String.join(",", interestFields);
+        this.skills = String.join(",", skills);
+    }
+
+    public void register() {
+        this.isRegistered = true;
     }
 }

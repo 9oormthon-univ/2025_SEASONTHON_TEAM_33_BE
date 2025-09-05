@@ -74,12 +74,6 @@ public class RestExceptionHandler {
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {Exception.class})
-    public ResponseDto<?> handleException(Exception e) {
-        log.error("Exception raised: {}", e.getMessage());
-        return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(value = {RestException.class})
     public ResponseDto<?> handleRestException(RestException e) {
         log.error("RestException raised: {}", e.getErrorCode().getMessage());
