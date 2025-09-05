@@ -64,7 +64,7 @@ public class Users extends BaseEntity {
 
     private String portfolioOriginName;
 
-    private String portfolioSaveNam;
+    private String portfolioSaveName;
 
 
     @Builder
@@ -83,7 +83,7 @@ public class Users extends BaseEntity {
             String resumeOriginName,
             String resumeSaveName,
             String portfolioOriginName,
-            String portfolioSaveNam
+            String portfolioSaveName
     ) {
         this.oauthProvider = oauthProvider;
         this.oauthId = oauthId;
@@ -99,10 +99,18 @@ public class Users extends BaseEntity {
         this.resumeOriginName = resumeOriginName;
         this.resumeSaveName = resumeSaveName;
         this.portfolioOriginName = portfolioOriginName;
-        this.portfolioSaveNam = portfolioSaveNam;
+        this.portfolioSaveName = portfolioSaveName;
     }
 
-    public void updateUserInfo(String name, String email, String phoneNumber, Education education, String major, List<String> interestFields, List<String> skills) {
+    public void updateUserInfo(
+            String name,
+            String email,
+            String phoneNumber,
+            Education education,
+            String major,
+            List<String> interestFields,
+            List<String> skills
+    ) {
         this.name = name;
         this.email = email;
         this.contact = phoneNumber;
@@ -110,6 +118,16 @@ public class Users extends BaseEntity {
         this.major = major;
         this.interests = String.join(",", interestFields);
         this.skills = String.join(",", skills);
+    }
+
+    public void updateResume(String resumeOriginName, String resumeSaveName) {
+        this.resumeOriginName = resumeOriginName;
+        this.resumeSaveName = resumeSaveName;
+    }
+
+    public void updatePortfolio(String portfolioOriginName, String portfolioSaveName) {
+        this.portfolioOriginName = portfolioOriginName;
+        this.portfolioSaveName = portfolioSaveName;
     }
 
     public void register() {

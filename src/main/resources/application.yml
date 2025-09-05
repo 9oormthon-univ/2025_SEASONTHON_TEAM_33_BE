@@ -56,3 +56,22 @@ jwt:
   access-token-expiration-time: ${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
   refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
   secret-key: ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_IAM_ACCESS_KEY:test}
+      secret-key: ${AWS_IAM_SECRET_KEY:test}
+    s3:
+      endpoint:
+      bucket:
+        name: ${AWS_S3_BUCKET_NAME:test-bucket}
+        expiration-time: ${AWS_S3_EXPIRATION_TIME:259200000}
+      save-path:
+        resume: ${AWS_S3_SAVE_PATH_RESUME:/resume}
+        portfolio: ${AWS_S#_SAVE_PATH_PROTFOLIO:/portfolio}
+      region:
+        auto: false
+        static: ${AWS_REGION:ap-northeast-2}
+      stack:
+        auto: false
