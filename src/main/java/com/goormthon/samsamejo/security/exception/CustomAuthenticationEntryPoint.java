@@ -20,6 +20,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         log.info("customAuthenticationEntryPoint called");
         ErrorCode errorCode = (ErrorCode) Optional.ofNullable(request.getAttribute("exception")).orElse(ErrorCode.NOT_FOUND_END_POINT);
-        HttpResponseUtil.setErrorResponse(response, errorCode);
+        HttpResponseUtil.setResponse(response, errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage(), null);
     }
 }

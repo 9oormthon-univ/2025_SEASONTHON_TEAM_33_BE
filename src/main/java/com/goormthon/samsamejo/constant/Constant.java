@@ -17,27 +17,14 @@ public class Constant {
     public static final String RESPONSE_CONTENT_TYPE = "application/json";
     public static final String RESPONSE_CHARACTER_ENCODING = "UTF-8";
 
-    public static final List<String> PERMIT_ALL_URLS = List.of(
-            "/favicon.ico",
+    public static final List<String> ADMIN_ONLY_URLS = List.of(
+            "/api/v1/recruitments/crawl",
+            "/api/v1/recruitments/status",
 
-            "/login/oauth2/code/google",
-            "/oauth2/authorization/google",
-            "/login/oauth2/code/kakao",
-            "/oauth2/authorization/kakao",
-            "/login/oauth2/code/naver",
-            "/oauth2/authorization/naver",
-            "/favicon.ico",
-            "/login/**",
+            "/api/v1/ai/**",
 
-            "/api/v1/recruitments/**",
-
-            "/swagger",
-            "/swagger-ui.html",
             "/swagger-ui/**",
-            "/api-docs.html",
-            "/api-docs",
             "/api-docs/**",
-            "/swagger-ui",
             "/v3/**"
     );
 
@@ -53,10 +40,13 @@ public class Constant {
             "/api/v1/archives/**"
     );
 
-    public static final List<String> ADMIN_ONLY_URLS = List.of(
-            "/api/v1/recruitments/crawl",
-            "/api/v1/recruitments/status",
+    public static final List<String> PERMIT_ALL_URLS = List.of(
+            "/favicon.ico",
 
-            "/api/v1/ai/**"
+            "/login/oauth2/code/*",
+            "/oauth2/authorization/*",
+
+            "/api/v1/recruitments",
+            "/api/v1/recruitments/*"
     );
 }
