@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +48,7 @@ public class AuthController {
         String refreshToken = CookieUtil.getCookieValue(request, REFRESH_TOKEN).orElseThrow(() -> new RestException(NO_REFRESH_TOKEN_HEADER));
 
         JwtDto jwtDto = authService.reissue(refreshToken);
-        HttpResponseUtil.setHeader(response);
+        HttpResponseUtil.setHeader(response, HttpStatus.OK);
         CookieUtil.createCookie(response, ACCESS_TOKEN, jwtDto.accessToken(), cookieDomain, TOKEN_COOKIE_PATH, jwtDto.accessTokenExpirationTime().intValue());
         CookieUtil.createSecureCookie(response, REFRESH_TOKEN, jwtDto.refreshToken(), cookieDomain, TOKEN_COOKIE_PATH, (int) (jwtDto.refreshTokenExpirationTime() / 1000));
         response.sendRedirect(redirectUri);

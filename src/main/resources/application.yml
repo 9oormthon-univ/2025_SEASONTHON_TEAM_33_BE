@@ -69,7 +69,7 @@ cloud:
         expiration-time: ${AWS_S3_EXPIRATION_TIME:259200000}
       save-path:
         resume: ${AWS_S3_SAVE_PATH_RESUME:/resume}
-        portfolio: ${AWS_S#_SAVE_PATH_PROTFOLIO:/portfolio}
+        portfolio: ${AWS_S3_SAVE_PATH_PORTFOLIO:/portfolio}
       region:
         auto: false
         static: ${AWS_REGION:ap-northeast-2}

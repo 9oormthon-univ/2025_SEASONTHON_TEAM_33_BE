@@ -50,7 +50,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return id.toString();
+        return this.id.toString();
     }
 
     @Override

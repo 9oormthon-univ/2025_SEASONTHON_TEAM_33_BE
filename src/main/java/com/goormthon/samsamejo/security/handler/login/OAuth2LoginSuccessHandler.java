@@ -23,14 +23,15 @@ import static com.goormthon.samsamejo.constant.Constant.*;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final AuthService authService;
+    private final JwtUtil jwtUtil;
+
     @Value("${jwt.cookie-domain}")
     private String cookieDomain;
     @Value("${spring.security.login.success-redirect-uri}")
     private String loginSuccessRedirectUri;
     @Value("${spring.security.login.not-registered-redirect-uri}")
     private String NotRegisteredRedirectUri;
-    private final AuthService authService;
-    private final JwtUtil jwtUtil;
 
     @Override
     public void onAuthenticationSuccess(

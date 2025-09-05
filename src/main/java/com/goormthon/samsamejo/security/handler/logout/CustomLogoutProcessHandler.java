@@ -21,7 +21,7 @@ public class CustomLogoutProcessHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         log.info("customLogoutProcessHandler called");
 
-        UserClaims userClaims = (UserClaims) authentication.getPrincipal();
-        authService.updateUserTokens(null, userClaims.id());
+        Long userId = (Long) authentication.getPrincipal();
+        authService.updateUserTokens(null, userId);
     }
 }

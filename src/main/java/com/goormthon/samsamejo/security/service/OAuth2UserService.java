@@ -2,8 +2,6 @@ package com.goormthon.samsamejo.security.service;
 
 import com.goormthon.samsamejo.domain.Users;
 import com.goormthon.samsamejo.domain.type.EProvider;
-import com.goormthon.samsamejo.exception.ErrorCode;
-import com.goormthon.samsamejo.exception.RestException;
 import com.goormthon.samsamejo.repository.UsersRepository;
 import com.goormthon.samsamejo.security.factory.OAuth2UserInfoFactory;
 import com.goormthon.samsamejo.security.factory.Oauth2UserInfo;
