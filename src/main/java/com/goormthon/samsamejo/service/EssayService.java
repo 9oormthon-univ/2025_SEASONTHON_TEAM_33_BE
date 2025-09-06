@@ -2,13 +2,11 @@ package com.goormthon.samsamejo.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.goormthon.samsamejo.domain.Essay;
-import com.goormthon.samsamejo.domain.Question;
+import com.goormthon.samsamejo.domain.*;
 import com.goormthon.samsamejo.dto.request.RecruitmentEssayWriteRequest;
-import com.goormthon.samsamejo.exception.RestException;
 import com.goormthon.samsamejo.exception.ErrorCode;
-import com.goormthon.samsamejo.repository.EssayRepository;
-import com.goormthon.samsamejo.repository.QuestionRepository;
+import com.goormthon.samsamejo.exception.RestException;
+import com.goormthon.samsamejo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,39 +17,58 @@ public class EssayService {
 
     private final EssayRepository essayRepository;
     private final QuestionRepository questionRepository;
+    private final UsersRepository userRepository;
+    private final UserRecruitmentRepository userRecruitmentRepository;
+    private final RecruitmentRepository recruitmentRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 자기소개서 작성/수정
+     * @param userId        작성자 유저 ID (JWT에서 추출)
      * @param recruitmentId 채용 공고 ID
-     * @param request 사용자 작성 요청
+     * @param request       사용자 작성 요청
      */
     @Transactional
-    public void writeEssays(Long recruitmentId, /* Long userId, */ RecruitmentEssayWriteRequest request) {
-        // TODO: User 연동 시 활성화
-        // User user = userRepository.findById(userId)
-        //         .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_USER));
+    public void writeEssays(Long userId, Long recruitmentId, RecruitmentEssayWriteRequest request) {
+        // 유저 확인
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_USER));
 
+        // 채용 공고 확인
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_RECRUITMENT));
+
+        // 기존 자기소개서(UserRecruitment) 확인 or 새로 생성
+        UserRecruitment userRecruitment;
+        if (request.getUserRecruitmentId() != null) {
+            userRecruitment = userRecruitmentRepository.findById(request.getUserRecruitmentId())
+                    .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_RECRUITMENT));
+        } else {
+            userRecruitment = UserRecruitment.builder()
+                    .user(user)
+                    .recruitment(recruitment)
+                    .build();
+            userRecruitmentRepository.save(userRecruitment);
+        }
+
+        // 문항별 답변 저장
         request.getEssays().forEach(essayReq -> {
             Question question = questionRepository.findById(essayReq.getQuestionId())
                     .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_QUESTION));
 
-            String content = essayReq.getEssayContent();
-            if (content == null || content.isBlank()) {
-                throw new RestException(ErrorCode.INVALID_INPUT_VALUE);
-            }
-
-            // 현재는 user 연동이 없으므로 question 기준으로만 에세이를 가져옴
-            Essay essay = question.getEssays().isEmpty() ? null : question.getEssays().get(0);
+            Essay essay = essayRepository.findByUser_IdAndQuestion_Id(userId, essayReq.getQuestionId())
+                    .orElse(null);
 
             if (essay == null) {
                 essay = Essay.builder()
+                        .user(user)
+                        .userRecruitment(userRecruitment)
                         .question(question)
-                        .content(content)
+                        .content(essayReq.getEssayContent())
                         .tags(convertTagsToJson(essayReq.getTags()))
                         .build();
             } else {
-                essay.setContent(content);
+                essay.setContent(essayReq.getEssayContent());
                 essay.setTags(convertTagsToJson(essayReq.getTags()));
             }
 

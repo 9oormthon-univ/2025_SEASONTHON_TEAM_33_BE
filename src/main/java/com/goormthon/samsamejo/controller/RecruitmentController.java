@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -105,7 +106,18 @@ public class RecruitmentController {
             @PathVariable @Min(0) Long recruitmentId,
             @RequestBody RecruitmentEssayWriteRequest request
     ) {
-        essayService.writeEssays(recruitmentId, request);
+        // JWTAuthenticationFilter에서 principal에 userId(Long) 저장됨
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = null;
+        if (principal instanceof String && principal.equals("anonymousUser")) {
+            // 테스트용 임시 userId
+            userId = 1L;
+        } else {
+            userId = Long.valueOf(principal.toString());
+        }
+
+        essayService.writeEssays(userId, recruitmentId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
+
 }
