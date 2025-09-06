@@ -44,6 +44,12 @@ public class RecruitmentDetailResponse {
                 .deadline(recruitment.getDeadline())
                 .createdAt(recruitment.getCreatedAt())
                 .updatedAt(recruitment.getUpdatedAt())
+                .questions(recruitment.getQuestions() != null
+                        ? recruitment.getQuestions().stream()
+                        .map(q -> q.getContent())
+                        .toList()
+                        : Collections.emptyList()
+                )
                 .build();
     }
 

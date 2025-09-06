@@ -4,6 +4,8 @@ package com.goormthon.samsamejo.service;
 import com.goormthon.samsamejo.domain.Recruitment;
 import com.goormthon.samsamejo.dto.response.RecruitmentApiResponse;
 import com.goormthon.samsamejo.repository.RecruitmentRepository;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -98,12 +100,15 @@ public class RecruitmentService {
      */
     public int fetchAndSaveFromApi() {
         int pageNo = 1;
-        int numOfRows = 30; // 가능하면 최대치
-        int totalSaved = 0;
-        int maxLimit = 30;
+        int numOfRows = 30; // 페이지당 개수
+        int pageLimit = 1;  // 가져올 최대 페이지 수 (테스트용 1페이지)
+
+        int totalNew = 0;
+        int totalUpdated = 0;
+        int totalFailed = 0;
 
         try {
-            while (totalSaved < maxLimit) {
+            while (pageNo <= pageLimit) {
                 String url = apiUrl + "/list"
                         + "?serviceKey=" + apiKey
                         + "&pageNo=" + pageNo
@@ -113,20 +118,35 @@ public class RecruitmentService {
                 RecruitmentApiResponse response = restTemplate.getForObject(url, RecruitmentApiResponse.class);
 
                 if (response == null || response.getResult() == null || response.getResult().isEmpty()) {
-                    break; // 더 이상 데이터 없음
+                    break; // 데이터 없음 → 종료
                 }
 
                 List<Recruitment> recruitments = response.getResult().stream()
                         .map(this::toEntity)
                         .toList();
 
-                // Upsert 로직 적용
-                totalSaved += saveOrUpdateRecruitments(recruitments);
+                for (Recruitment r : recruitments) {
+                    try {
+                        Optional<Recruitment> existing = recruitmentRepository.findByExternalId(r.getExternalId());
+                        if (existing.isPresent()) {
+                            existing.get().updateFrom(r);
+                            totalUpdated++;
+                        } else {
+                            recruitmentRepository.save(r);
+                            totalNew++;
+                        }
+                    } catch (Exception e) {
+                        totalFailed++;
+                    }
+                }
+
                 pageNo++;
             }
 
-            fetchLogService.saveLog("SUCCESS", "API", totalSaved, 0, 0, "정상 저장");
-            return totalSaved;
+            String status = (totalFailed > 0) ? "SUCCESS_PARTIAL" : "SUCCESS";
+            fetchLogService.saveLog(status, "API", totalNew, totalUpdated, totalFailed, "정상 저장");
+            return totalNew + totalUpdated;
+
         } catch (Exception e) {
             fetchLogService.saveLog("FAILED", "API", 0, 0, 0, e.getMessage());
             throw e;
@@ -156,18 +176,29 @@ public class RecruitmentService {
     /**
      * Upsert (중복 방지 저장)
      */
-    private int saveOrUpdateRecruitments(List<Recruitment> recruitments) {
-        int count = 0;
+    private SaveResult saveOrUpdateRecruitments(List<Recruitment> recruitments) {
+        int newCount = 0;
+        int updatedCount = 0;
+
         for (Recruitment r : recruitments) {
             Optional<Recruitment> existing = recruitmentRepository.findByExternalId(r.getExternalId());
             if (existing.isPresent()) {
-                existing.get().updateFrom(r); // update 메서드 구현 (Recruitment 엔티티에 있음)
+                existing.get().updateFrom(r);
+                updatedCount++;
             } else {
                 recruitmentRepository.save(r);
-                count++;
+                newCount++;
             }
         }
-        return count;
+
+        return new SaveResult(newCount, updatedCount);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class SaveResult {
+        private final int newCount;
+        private final int updatedCount;
     }
 
     // ===== 변환 메서드 =====

@@ -10,11 +10,13 @@ public enum ErrorCode {
 
     // Common Client Error
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 4000, "잘못된 요청 파라미터입니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 4001, "입력값이 유효하지 않습니다."),
 
     // Not Found Error
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 4001, "존재하지 않는 사용자입니다"),
     NOT_FOUND_FILE_PATH(HttpStatus.NOT_FOUND, 4002, "존재하지 않는 파일 경로입니다"),
     NOT_FOUND_RECRUITMENT(HttpStatus.NOT_FOUND, 4002, "존재하지 않는 채용 공고입니다"),
+    NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, 4005, "존재하지 않는 질문입니다"),
 
     // Security Error
     ACCESS_DENIED_ERROR(HttpStatus.UNAUTHORIZED, 4030, "접근이 거부된 토큰입니다."),

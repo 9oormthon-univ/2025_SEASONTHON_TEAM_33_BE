@@ -64,6 +64,9 @@ public class Recruitment {
     @Column(name = "skill")
     private List<String> skills;  // 기술 스택 (사용자 입력)
 
+    @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Question> questions;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
