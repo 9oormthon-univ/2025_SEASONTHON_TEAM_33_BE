@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,8 @@ public class RecruitmentController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("savedCount", savedCount);
-        response.put("timestamp", LocalDateTime.now());
+        response.put("timestamp", LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         return ResponseEntity.ok(response);
     }
