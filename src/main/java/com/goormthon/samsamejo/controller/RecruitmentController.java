@@ -1,5 +1,6 @@
 package com.goormthon.samsamejo.controller;
 
+import com.goormthon.samsamejo.annotation.UserId;
 import com.goormthon.samsamejo.domain.Recruitment;
 import com.goormthon.samsamejo.dto.request.RecruitmentEssayWriteRequest;
 import com.goormthon.samsamejo.dto.response.*;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,6 +77,7 @@ public class RecruitmentController {
     /**
      * 채용 공고 API 연동 (공공데이터포털 → DB 저장)
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/fetch")
     public ResponseEntity<Map<String, Object>> fetchRecruitmentsFromApi() {
         int savedCount = recruitmentService.fetchAndSaveFromApi();
@@ -90,6 +93,7 @@ public class RecruitmentController {
     /**
      * 채용 공고 질문 불러오기
      */
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{recruitmentId}/write")
     public ResponseEntity<ApiResponse<RecruitmentQuestionsResponse>> getRecruitmentQuestions(
             @PathVariable @Min(0) Long recruitmentId) {
@@ -101,21 +105,13 @@ public class RecruitmentController {
     /**
      * 채용 공고 자기소개서 작성
      */
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping("/{recruitmentId}/write")
     public ResponseEntity<ApiResponse<Void>> writeEssays(
+            @UserId Long userId,
             @PathVariable @Min(0) Long recruitmentId,
             @RequestBody RecruitmentEssayWriteRequest request
     ) {
-        // JWTAuthenticationFilter에서 principal에 userId(Long) 저장됨
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long userId = null;
-        if (principal instanceof String && principal.equals("anonymousUser")) {
-            // 테스트용 임시 userId
-            userId = 1L;
-        } else {
-            userId = Long.valueOf(principal.toString());
-        }
-
         essayService.writeEssays(userId, recruitmentId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }

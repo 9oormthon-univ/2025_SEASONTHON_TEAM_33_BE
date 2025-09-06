@@ -1,5 +1,6 @@
 package com.goormthon.samsamejo.controller;
 
+import com.goormthon.samsamejo.annotation.UserId;
 import com.goormthon.samsamejo.dto.request.ResumeUpdateRequest;
 import com.goormthon.samsamejo.dto.response.ApiResponse;
 import com.goormthon.samsamejo.dto.response.ResumeDetailResponse;
@@ -7,6 +8,7 @@ import com.goormthon.samsamejo.dto.response.ResumeListResponse;
 import com.goormthon.samsamejo.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,9 +21,10 @@ public class ResumeController {
     /**
      * 1. 자기소개서 목록 조회
      */
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<ResumeListResponse>> getUserResumes(
-            @RequestHeader("X-USER-ID") Long userId
+            @UserId Long userId
     ) {
         ResumeListResponse data = resumeService.getUserResumes(userId);
         return ResponseEntity.ok(ApiResponse.ok(data));
@@ -30,9 +33,10 @@ public class ResumeController {
     /**
      * 2. 특정 자기소개서 상세 조회
      */
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{userRecruitmentId}")
     public ResponseEntity<ApiResponse<ResumeDetailResponse>> getUserResumeDetail(
-            @RequestHeader("X-USER-ID") Long userId,
+            @UserId Long userId,
             @PathVariable Long userRecruitmentId
     ) {
         ResumeDetailResponse data = resumeService.getUserResumeDetail(userId, userRecruitmentId);
@@ -42,9 +46,10 @@ public class ResumeController {
     /**
      * 3. 자기소개서 수정/저장
      */
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{userRecruitmentId}")
     public ResponseEntity<ApiResponse<Void>> updateUserResume(
-            @RequestHeader("X-USER-ID") Long userId,
+            @UserId Long userId,
             @PathVariable Long userRecruitmentId,
             @RequestBody ResumeUpdateRequest request
     ) {

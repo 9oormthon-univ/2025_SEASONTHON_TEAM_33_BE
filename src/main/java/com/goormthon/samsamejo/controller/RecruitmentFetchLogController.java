@@ -1,3 +1,4 @@
+// src/main/java/com/goormthon/samsamejo/controller/RecruitmentFetchLogController.java
 package com.goormthon.samsamejo.controller;
 
 import com.goormthon.samsamejo.dto.response.RecruitmentStatusResponse;
@@ -14,12 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RecruitmentFetchLogController {
 
+    private static final String NO_LOG_STATUS = "NO_LOG";
+
     private final RecruitmentFetchLogService fetchLogService;
 
+    /**
+     * 최근 채용 공고 수집 실행 상태 조회 (관리자 전용)
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/status")
     public ResponseEntity<RecruitmentStatusResponse> getLastFetchStatus() {
-        return fetchLogService.getLastLog()
+        RecruitmentStatusResponse response = fetchLogService.getLastLog()
                 .map(log -> RecruitmentStatusResponse.builder()
                         .lastRun(log.getExecutedAt())
                         .status(log.getStatus())
@@ -27,15 +33,14 @@ public class RecruitmentFetchLogController {
                         .updatedJobs(log.getUpdatedCount())
                         .failedJobs(log.getFailedCount())
                         .build())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.ok(
-                        RecruitmentStatusResponse.builder()
-                                .lastRun(null)
-                                .status("NO_LOG")
-                                .newJobs(0)
-                                .updatedJobs(0)
-                                .failedJobs(0)
-                                .build()
-                ));
+                .orElseGet(() -> RecruitmentStatusResponse.builder()
+                        .lastRun(null)
+                        .status(NO_LOG_STATUS)
+                        .newJobs(0)
+                        .updatedJobs(0)
+                        .failedJobs(0)
+                        .build());
+
+        return ResponseEntity.ok(response);
     }
 }
