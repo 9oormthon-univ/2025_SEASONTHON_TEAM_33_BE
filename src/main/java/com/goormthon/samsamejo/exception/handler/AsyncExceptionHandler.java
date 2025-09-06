@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 @Slf4j
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
+
     @Override
     public void handleUncaughtException(Throwable ex, Method method, Object... params) {
         log.error("AsyncException : method={}, message={}", method.getName(), ex.getMessage());
