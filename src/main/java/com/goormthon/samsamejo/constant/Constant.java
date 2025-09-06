@@ -41,6 +41,7 @@ public class Constant {
     );
 
     public static final List<String> PERMIT_ALL_URLS = List.of(
+            "/health",
             "/favicon.ico",
 
             "/login/oauth2/code/*",
