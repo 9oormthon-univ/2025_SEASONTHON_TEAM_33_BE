@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: local
 
+  cors:
+    origin: ${CORS_ORIGIN:localhost}
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/samsamejo_db?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
@@ -18,3 +21,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
         highlight_sql: true
+
+jwt:
+  cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}

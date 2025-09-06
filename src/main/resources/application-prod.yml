@@ -1,6 +1,27 @@
 spring:
-  profiles:
-    active: ${SPRING_PROFILE:local}
+  config:
+    activate:
+      on-profile: prod
+
+  cors:
+    origin: ${CORS_ORIGIN:essaily.site}
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_ENDPOINT}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        highlight_sql: true
+
 
   security:
     oauth2:
@@ -52,31 +73,4 @@ spring:
       not-registered-redirect-uri: ${SECURITY_NOT_REGISTERED_REDIRECT_URI}
 
 jwt:
-  access-token-expiration-time: ${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
-  refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
-  secret-key: ${JWT_SECRET_KEY}
-
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_IAM_ACCESS_KEY:test}
-      secret-key: ${AWS_IAM_SECRET_KEY:test}
-    s3:
-      endpoint:
-      bucket:
-        name: ${AWS_S3_BUCKET_NAME:test-bucket}
-        expiration-time: ${AWS_S3_EXPIRATION_TIME:259200000}
-      save-path:
-        resume: ${AWS_S3_SAVE_PATH_RESUME:/resume}
-        portfolio: ${AWS_S3_SAVE_PATH_PORTFOLIO:/portfolio}
-      region:
-        auto: false
-        static: ${AWS_REGION:ap-northeast-2}
-      stack:
-        auto: false
-
-recruitment:
-  api:
-    public:
-      url: https://apis.data.go.kr/1051000/recruitment
-      key: ${PUBLIC_DATA_API_KEY}
+  cookie-domain: ${JWT_COOKIE_DOMAIN:essaily.site}
