@@ -31,8 +31,12 @@ public enum ErrorCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 4040, "존재하지 않는 사용자입니다"),
     NOT_FOUND_FILE_PATH(HttpStatus.NOT_FOUND, 4041, "존재하지 않는 파일 경로입니다"),
     NOT_FOUND_END_POINT(HttpStatus.NOT_FOUND, 4042, "존재하지 않는 요청 경로입니다."),
+    NOT_FOUND_USER_RECRUITMENT(HttpStatus.NOT_FOUND, 4043, "존재하지 않는 자기소개서입니다."),
     NOT_FOUND_RECRUITMENT(HttpStatus.NOT_FOUND, 4003, "존재하지 않는 채용 공고입니다"),
     NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, 4004, "존재하지 않는 질문입니다"),
+
+    // Permission Error
+    FORBIDDEN(HttpStatus.FORBIDDEN, 4030, "권한이 없습니다."),
 
     // Server, File Up/DownLoad Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000, "서버 내부에 에러가 발생했습니다."),

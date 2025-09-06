@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(auth -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/recruitments/**", "/api/v1/user-recruitments/**").permitAll()
                         .requestMatchers(Constant.ADMIN_ONLY_URLS.toArray(new String[0])).hasRole("ADMIN")
                         .requestMatchers(Constant.USER_AUTH_URLS.toArray(new String[0])).hasAnyRole("USER", "ADMIN")
                         .requestMatchers(Constant.PERMIT_ALL_URLS.toArray(new String[0])).permitAll()
