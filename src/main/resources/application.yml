@@ -75,3 +75,9 @@ cloud:
         static: ${AWS_REGION:ap-northeast-2}
       stack:
         auto: false
+
+recruitment:
+  api:
+    public:
+      url: https://apis.data.go.kr/1051000/recruitment
+      key: ${PUBLIC_DATA_API_KEY}
