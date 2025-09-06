@@ -81,10 +81,6 @@ public class RestExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseDto<?> handleException(Exception e) {
         log.error("Exception raised: {}", e.getMessage(), e);
-
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public ResponseDto<?> handleArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException raised: {}", e.getMessage());
         return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
